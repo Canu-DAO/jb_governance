@@ -21,7 +21,7 @@ activity = discord.Game(name = "Governance")
 
 # Instantiate the bot
 bot = commands.Bot(command_prefix=prefix, help_command=help_command, activity=activity)
-WHEN = time(22, 0, 0)  # 22:00 UTC
+WHEN = time(21, 8, 0)  # 22:00 UTC
 
 
 
@@ -32,7 +32,8 @@ async def gov_cycle():
         
     channel_id = env["CHANNEL_ID"]
     today = "%02d" % (env["CURRENT_DAY"],)
-    daily_image = f"resources/{today}.png"
+    daily_image = f"resources/day{today}/{today}.png"
+    daily_thumb = f"resources/day{today}/thumbnail.png"
 
     if env["YESTERDAY_ID"] !=0:
         channel = bot.get_channel(int(channel_id))
@@ -40,17 +41,24 @@ async def gov_cycle():
         await msg.delete()       
 
  
-    image = discord.File(daily_image, filename="image.png")
+    
 
     embed = Embed(
         title = 'Governance Update',
-        description = f"**Hey Juicer!**\n\nToday is day {env["CURRENT_DAY"]} of our [Governance Cycle](https://juicebox.notion.site/Governance-Process-38e3d9990bd94c738f56fa749a4bd209)"
+        description = f"**Hey Juicer!**\n\nToday is day {env['CURRENT_DAY']+1} of our [Governance Cycle](https://juicebox.notion.site/Governance-Process-38e3d9990bd94c738f56fa749a4bd209)"
         )
+
+    image = discord.File(daily_image, filename="image.png")
     embed.set_image(url="attachment://image.png")
+
+    thumb = discord.File(daily_thumb, filename="thumb.png")
+    embed.set_thumbnail(url="attachment://thumb.png")
     
+    files = [image, thumb]
+
     await bot.wait_until_ready() # This step is necessary to make sure the bot is ready to send
     channel = bot.get_channel(int(channel_id))
-    msg = await channel.send(file=image, embed=embed)
+    msg = await channel.send(files=files, embed=embed)
 
     env["CURRENT_DAY"] = (env["CURRENT_DAY"] + 1) % 14
     env["YESTERDAY_ID"] = msg.id
