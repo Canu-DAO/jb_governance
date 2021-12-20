@@ -21,7 +21,7 @@ activity = discord.Game(name = "Governance")
 
 # Instantiate the bot
 bot = commands.Bot(command_prefix=prefix, help_command=help_command, activity=activity)
-WHEN = time(21, 8, 0)  # 22:00 UTC
+WHEN = time(22, 0, 0)  # 22:00 UTC
 
 
 
