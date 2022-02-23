@@ -21,7 +21,7 @@ activity = discord.Game(name = "Governance")
 
 # Instantiate the bot
 bot = commands.Bot(command_prefix=prefix, help_command=help_command, activity=activity)
-WHEN = time(22, 0, 0)  # 22:00 UTC
+WHEN = time(16, 50, 00)  # 00:00 UTC
 
 
 
@@ -36,7 +36,7 @@ async def gov_cycle():
     daily_thumb = f"resources/day{today}/thumbnail.png"
 
     if env["YESTERDAY_ID"] !=0:
-        channel = bot.get_channel(int(channel_id))
+        channel = bot.get_channel(channel_id)
         msg = await channel.fetch_message(str(env["YESTERDAY_ID"]))
         await msg.delete()       
 
@@ -45,7 +45,7 @@ async def gov_cycle():
 
     embed = Embed(
         title = 'Governance Update',
-        description = f"**Hey Juicer!**\n\nToday is day {env['CURRENT_DAY']+1} of our [Governance Cycle](https://juicebox.notion.site/Governance-Process-38e3d9990bd94c738f56fa749a4bd209)"
+        description = f"**Hey Baker!**\n\nToday is day {env['CURRENT_DAY']+1} of our Governance Cycle."
         )
 
     image = discord.File(daily_image, filename="image.png")
@@ -57,7 +57,7 @@ async def gov_cycle():
     files = [image, thumb]
 
     await bot.wait_until_ready() # This step is necessary to make sure the bot is ready to send
-    channel = bot.get_channel(int(channel_id))
+    channel = bot.get_channel(channel_id)
     msg = await channel.send(files=files, embed=embed)
 
     env["CURRENT_DAY"] = (env["CURRENT_DAY"] + 1) % 14
@@ -76,7 +76,6 @@ async def background_task():
         print("waiting for " + str(seconds))
         await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start 
     while True:
-        print("started")
         now = datetime.utcnow() # You can do now() or a specific timezone if that matters, but I'll leave it with utcnow
         target_time = datetime.combine(now.date(), WHEN)  # 22:00 PM today (In UTC)
         seconds_until_target = (target_time - now).total_seconds()
