@@ -3,8 +3,6 @@ from discord import Embed
 from dotenv import load_dotenv
 from discord.ext import commands, tasks
 from datetime import datetime, time, timedelta
-
-
 # Get bot key from environment.
 load_dotenv()
 auth = os.getenv("DISCORD_KEY")
@@ -17,11 +15,30 @@ help_command = commands.DefaultHelpCommand(
 )
 
 # Set status for the bot, showing how to run the help command
-activity = discord.Game(name = "Governance")
+activity = discord.Activity(name='Governance', type=discord.ActivityType.watching)
 
 # Instantiate the bot
 bot = commands.Bot(command_prefix=prefix, help_command=help_command, activity=activity)
-WHEN = time(16, 50, 00)  # 00:00 UTC
+WHEN = time(14, 5, 50)  # 00:00 UTC
+
+# Status dictionary
+status = {
+    '00': 'Temp Check | 72h',
+    '01': 'Temp Check | 48',
+    '02': 'Temp Check | 24h',
+    '03': 'Snapshot Vote | 96h',
+    '04': 'Snapshot Vote | 72h',
+    '05': 'Snapshot Vote | 48h',
+    '06': 'Snapshot Vote | 24h',
+    '07': 'Multisig Exec | 96h',
+    '08': 'Multisig Exec | 72h',
+    '09': 'Multisig Exec | 48',
+    '10': 'Multisig Exec | 24h',
+    '11': 'Delay Period | 72h',
+    '12': 'Delay Period | 48h',
+    '13': 'Delay Period | 24h',
+}
+
 
 
 
@@ -60,6 +77,7 @@ async def gov_cycle():
     channel = bot.get_channel(channel_id)
     msg = await channel.send(files=files, embed=embed)
 
+    await bot.change_presence(activity= discord.Activity(type=discord.ActivityType.watching, name=f"{status[today]}"))
     env["CURRENT_DAY"] = (env["CURRENT_DAY"] + 1) % 14
     env["YESTERDAY_ID"] = msg.id
 
