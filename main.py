@@ -28,7 +28,6 @@ WHEN = time(22, 0, 0)  # 22:00 UTC
 async def gov_cycle():
     with open('data.json', 'r') as file:
         env = json.load(file)
-
         
     channel_id = env["CHANNEL_ID"]
     today = "%02d" % (env["CURRENT_DAY"],)
@@ -38,10 +37,7 @@ async def gov_cycle():
     if env["YESTERDAY_ID"] !=0:
         channel = bot.get_channel(int(channel_id))
         msg = await channel.fetch_message(str(env["YESTERDAY_ID"]))
-        await msg.delete()       
-
- 
-    
+        await msg.delete()
 
     embed = Embed(
         title = 'Governance Update',
@@ -67,7 +63,6 @@ async def gov_cycle():
         json.dump(env, file)
 
 
-
 async def background_task():
     now = datetime.utcnow()
     if now.time() > WHEN:  # Make sure loop doesn't start after {WHEN} as then it will send immediately the first time as negative seconds will make the sleep yield instantly
@@ -85,7 +80,6 @@ async def background_task():
         tomorrow = datetime.combine(now.date() + timedelta(days=1), time(0))
         seconds = (tomorrow - now).total_seconds()  # Seconds until tomorrow (midnight)
         await asyncio.sleep(seconds)   # Sleep until tomorrow and then the loop will start a new iteration
-
 
 
 if __name__ == "__main__":
